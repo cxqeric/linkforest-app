@@ -13,9 +13,18 @@ import * as Animatable from 'react-native-animatable';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {WEB_CLIENT_ID} from '../Config';
-const Home = () => {
+const Home = ({navigation}) => {
   const lowerCardRef = useRef(null);
   const upperCardRef = useRef(null);
+
+  const onAuthStateChanged = user => {
+    navigation.navigate('Dashboard');
+  };
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
 
   useEffect(() => {
     if (lowerCardRef.current) {
@@ -65,9 +74,9 @@ const Home = () => {
           style={styles.googleBtn}
           onPress={() =>
             googleSignInBtnHandler()
-              .then(() => console.log('Signed in with Google!'))
+              .then(() => navigation.navigate('Dashboard'))
               .catch(error =>
-                ToastAndroid.show(error.message, ToastAndroid.BOTTOM),
+                ToastAndroid.show(`Error: ${error}`, ToastAndroid.BOTTOM),
               )
           }>
           <Text style={styles.googleTxt}>Continue With Google </Text>
