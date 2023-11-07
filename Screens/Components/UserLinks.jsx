@@ -7,31 +7,28 @@ const UserLinks = ({username}) => {
   const linkForestLink = [
     {
       index: 0,
-      link: 'linkforest.web.app/',
+      link: 'linkforest.web.app',
     },
     {
       index: 1,
-      link: 'linkfo.web.app/',
+      link: 'linkfo.web.app',
     },
   ];
-  return (
-    <View style={styles.content}>
-      <Text style={styles.linkMainTitle}>
-        Your Link <Text style={{color: colors.green}}>Forest</Text>
-      </Text>
+
+  const LinkCard = data => {
+    return (
       <View
         style={{
           width: '100%',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexDirection: 'row',
+          marginBottom: 10,
         }}>
         <Text
           style={styles.linkTxt}
-          onPress={() =>
-            Linking.openURL(`https://linkforest.web.app/${username}`)
-          }>
-          linkforest.web.app/{username}
+          onPress={() => Linking.openURL(`https://${data.link}/${username}`)}>
+          {data.link}/{username}
         </Text>
         <View
           style={{
@@ -45,6 +42,16 @@ const UserLinks = ({username}) => {
           </TouchableOpacity>
         </View>
       </View>
+    );
+  };
+  return (
+    <View style={styles.content}>
+      <Text style={styles.linkMainTitle}>
+        Your Link <Text style={{color: colors.green}}>Forest</Text>
+      </Text>
+      {linkForestLink.map(item => {
+        return <LinkCard link={item.link} key={item.index} />;
+      })}
     </View>
   );
 };
@@ -77,5 +84,6 @@ const styles = StyleSheet.create({
   linkTxt: {
     color: colors.dark,
     fontFamily: 'Montserrat-Medium',
+    fontSize: 16,
   },
 });

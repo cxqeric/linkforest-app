@@ -15,8 +15,10 @@ import * as Animatable from 'react-native-animatable';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {WEB_CLIENT_ID} from '../Config';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {setData} from '../Redux Toolkit/user';
+import firestore from '@react-native-firebase/firestore';
+
 const Home = ({navigation}) => {
   const lowerCardRef = useRef(null);
   const upperCardRef = useRef(null);
@@ -24,20 +26,38 @@ const Home = ({navigation}) => {
   const dispatch = useDispatch();
   const onAuthStateChanged = user => {
     if (user) {
-      dispatch(
-        setData({
-          name: user.displayName,
-          email: user.email,
-          uid: user.uid,
-          profile: user.photoURL,
-          username: '',
-        }),
-      );
+      firestore()
+        .collection('Link Forests')
+        .doc(user.uid)
+        .get()
+        .then(documentSnapshot => {
+          if (documentSnapshot.exists) {
+            dispatch(
+              setData({
+                name: user.displayName,
+                email: user.email,
+                uid: user.uid,
+                profile: user.photoURL,
+                username: documentSnapshot.data().username,
+              }),
+            );
+            navigation.navigate('Dashboard');
+          } else {
+            dispatch(
+              setData({
+                name: user.displayName,
+                email: user.email,
+                uid: user.uid,
+                profile: user.photoURL,
+              }),
+            );
+            navigation.navigate('Username', {data: {uid: user.uid}});
+          }
+        });
     } else {
       setChecking(false);
     }
   };
-  // const data = useSelector(state => state.userSlice.data);
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber;
@@ -80,9 +100,11 @@ const Home = ({navigation}) => {
           LINK <Text style={{color: colors.green}}>FOREST</Text>
         </Text>
         <Text style={styles.subtitle}>Unify your online presence</Text>
-        <View style={{marginTop: 20}}>
-          <ActivityIndicator color={colors.green} size={'large'} />
-        </View>
+        {checking && (
+          <View style={{marginTop: 20}}>
+            <ActivityIndicator color={colors.green} size={'large'} />
+          </View>
+        )}
       </Animatable.View>
 
       {!checking && (

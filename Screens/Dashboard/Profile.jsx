@@ -7,33 +7,89 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  Linking,
+  KeyboardAvoidingView,
+  ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import UploadIcon from 'react-native-vector-icons/Feather';
 import UserLinks from '../Components/UserLinks';
+import {useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 const Profile = () => {
-  const [username, setUsername] = useState('krish7104');
+  const [loading, setLoading] = useState(false);
+  const data = useSelector(state => state.userSlice.data);
   const [profile, setProfile] = useState({
     name: '',
     description: '',
     image:
       'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
+    username: '',
   });
+  useEffect(() => {
+    setProfile({
+      username: data.username,
+      uid: data.uid,
+      name: data.name,
+      image: data.profile,
+    });
+  }, [data]);
+
+  useEffect(() => {
+    getDataHandler();
+  }, []);
+
+  const getDataHandler = async () => {
+    const user = await firestore()
+      .collection('Link Forests')
+      .doc(data.uid)
+      .get();
+    console.log(user.data());
+    setProfile({
+      username: user.data().username,
+      uid: user.data().uid,
+      name: user.data().name,
+      image: user.data().image,
+    });
+  };
+
+  const saveChangesHandler = () => {
+    setLoading(true);
+    firestore()
+      .collection('Link Forests')
+      .doc(data.uid)
+      .update({
+        ...profile,
+      })
+      .then(() => {
+        setLoading(false);
+        ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.wrapper}>
-      <Navigation />
+      <Navigation title={'PROFILE'} />
       <ScrollView style={{width: '90%'}}>
-        <View style={styles.content}>
+        <UserLinks username={profile.username} />
+        <KeyboardAvoidingView style={styles.content}>
           <View style={styles.imageView}>
-            <Image
-              source={{uri: profile.image}}
-              style={{width: 120, height: 120, borderRadius: 20}}
-            />
+            {!profile.image ? (
+              <Image
+                source={{
+                  uri: 'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
+                }}
+                style={{width: 100, height: 100, borderRadius: 120}}
+              />
+            ) : (
+              <Image
+                source={{uri: profile.image}}
+                style={{width: 100, height: 100, borderRadius: 120}}
+              />
+            )}
             <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.8}>
               <Text style={styles.uploadTxt}>Upload</Text>
               <UploadIcon
@@ -62,11 +118,16 @@ const Profile = () => {
               placeholder="Enter your description"
             />
           </View>
-          <TouchableOpacity activeOpacity={0.8} style={styles.saveBtn}>
-            <Text style={styles.saveTxt}>Save Changes</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.saveBtn}
+            onPress={saveChangesHandler}>
+            {!loading && <Text style={styles.saveTxt}>Save Changes</Text>}
+            {loading && (
+              <ActivityIndicator color={colors.light} size={'small'} />
+            )}
           </TouchableOpacity>
-        </View>
-        <UserLinks username={username} />
+        </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );
@@ -89,7 +150,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 22,
+    marginTop: 8,
   },
   uploadBtn: {
     borderColor: colors.green,
@@ -104,6 +166,7 @@ const styles = StyleSheet.create({
   },
   uploadTxt: {
     color: colors.green,
+    fontFamily: 'Montserrat-Medium',
   },
   content: {
     backgroundColor: colors.light,
@@ -157,6 +220,7 @@ const styles = StyleSheet.create({
     width: '60%',
     paddingVertical: 10,
     borderRadius: 8,
+    height: 40,
   },
   saveTxt: {
     fontFamily: 'Montserrat-Medium',

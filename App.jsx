@@ -5,11 +5,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './Screens/Home';
 import Dashboard from './Screens/Dashboard';
 import Profile from './Screens/Dashboard/Profile';
-import Links from './Screens/Dashboard/Links';
+import Links from './Screens/Dashboard/SocialLinks';
 import Themes from './Screens/Dashboard/Themes';
 import Settings from './Screens/Dashboard/Settings';
 import {Provider} from 'react-redux';
 import {store} from './Redux Toolkit/store';
+import Username from './Screens/Username';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -45,6 +46,11 @@ const App = () => {
           <Stack.Screen
             name="Settings"
             component={Settings}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Username"
+            component={Username}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

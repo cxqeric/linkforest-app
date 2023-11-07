@@ -1,11 +1,16 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors} from '../../utils/colors';
-
-const Navigation = () => {
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from '@react-navigation/native';
+const Navigation = ({title}) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.navWrapper}>
-      <Text style={styles.navTxt}>LINK FOREST</Text>
+      <Text style={styles.navTxt}>{title}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+        <Ionicons name={'settings-outline'} size={24} color={colors.dark} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -14,23 +19,23 @@ export default Navigation;
 
 const styles = StyleSheet.create({
   navWrapper: {
-    width: '90%',
-    marginVertical: 20,
+    width: '100%',
     backgroundColor: colors.green,
     elevation: 20,
     paddingVertical: 18,
-    borderRadius: 12,
     shadowColor: colors.green,
-    shadowOffset: {
-      height: 4,
-      width: 4,
-    },
+    marginBottom: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
   navTxt: {
     fontFamily: 'Montserrat-Bold',
     color: colors.dark,
     textAlign: 'center',
     fontSize: 20,
-    letterSpacing: 2,
+    letterSpacing: 1,
   },
 });

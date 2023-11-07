@@ -5,7 +5,7 @@ import Navigation from '../Components/Navigation';
 const Settings = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
-      <Navigation />
+      <Navigation title={'THEMES'} />
       <ScrollView></ScrollView>
     </SafeAreaView>
   );
