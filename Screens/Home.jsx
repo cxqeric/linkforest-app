@@ -5,22 +5,39 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
+  ActivityIndicator,
+  View,
 } from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {colors} from '../utils/colors';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {WEB_CLIENT_ID} from '../Config';
+import {useDispatch, useSelector} from 'react-redux';
+import {setData} from '../Redux Toolkit/user';
 const Home = ({navigation}) => {
   const lowerCardRef = useRef(null);
   const upperCardRef = useRef(null);
-
+  const [checking, setChecking] = useState(true);
+  const dispatch = useDispatch();
   const onAuthStateChanged = user => {
-    navigation.navigate('Dashboard');
+    if (user) {
+      dispatch(
+        setData({
+          name: user.displayName,
+          email: user.email,
+          uid: user.uid,
+          profile: user.photoURL,
+          username: '',
+        }),
+      );
+    } else {
+      setChecking(false);
+    }
   };
-
+  // const data = useSelector(state => state.userSlice.data);
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber;
@@ -63,31 +80,37 @@ const Home = ({navigation}) => {
           LINK <Text style={{color: colors.green}}>FOREST</Text>
         </Text>
         <Text style={styles.subtitle}>Unify your online presence</Text>
+        <View style={{marginTop: 20}}>
+          <ActivityIndicator color={colors.green} size={'large'} />
+        </View>
       </Animatable.View>
-      <Animatable.View
-        style={styles.lowerCard}
-        ref={lowerCardRef}
-        animation="slideInUp"
-        duration={1000}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.googleBtn}
-          onPress={() =>
-            googleSignInBtnHandler()
-              .then(() => navigation.navigate('Dashboard'))
-              .catch(error =>
-                ToastAndroid.show(`Error: ${error}`, ToastAndroid.BOTTOM),
-              )
-          }>
-          <Text style={styles.googleTxt}>Continue With Google </Text>
-          <FontAwesome
-            name="google"
-            color={colors.dark}
-            size={22}
-            style={{marginLeft: 4}}
-          />
-        </TouchableOpacity>
-      </Animatable.View>
+
+      {!checking && (
+        <Animatable.View
+          style={styles.lowerCard}
+          ref={lowerCardRef}
+          animation="slideInUp"
+          duration={1000}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.googleBtn}
+            onPress={() =>
+              googleSignInBtnHandler()
+                .then(() => navigation.navigate('Dashboard'))
+                .catch(error =>
+                  ToastAndroid.show(`Error: ${error}`, ToastAndroid.BOTTOM),
+                )
+            }>
+            <Text style={styles.googleTxt}>Continue With Google </Text>
+            <FontAwesome
+              name="google"
+              color={colors.dark}
+              size={22}
+              style={{marginLeft: 4}}
+            />
+          </TouchableOpacity>
+        </Animatable.View>
+      )}
     </SafeAreaView>
   );
 };
@@ -99,6 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.light,
+    flex: 1,
   },
   upperCard: {
     height: '80%',

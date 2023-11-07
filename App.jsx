@@ -8,42 +8,47 @@ import Profile from './Screens/Dashboard/Profile';
 import Links from './Screens/Dashboard/Links';
 import Themes from './Screens/Dashboard/Themes';
 import Settings from './Screens/Dashboard/Settings';
+import {Provider} from 'react-redux';
+import {store} from './Redux Toolkit/store';
+
 const App = () => {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Links"
-          component={Links}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Themes"
-          component={Themes}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{headerShown: false}}
-        />
-      </Stack.Navigator>
+      <Provider store={store}>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Links"
+            component={Links}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Themes"
+            component={Themes}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{headerShown: false}}
+          />
+        </Stack.Navigator>
+      </Provider>
     </NavigationContainer>
   );
 };
