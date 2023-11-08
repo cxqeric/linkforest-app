@@ -35,7 +35,8 @@ const SocialLinkInput = ({icon, placeholder, value, onChangeText}) => {
 
 const SocialLinks = () => {
   const [loading, setLoading] = useState(false);
-  const data = useSelector(state => state.userSlice.data);
+  const data = useSelector(state => state.dataSlice.userData);
+
   const [links, setLinks] = useState({
     email: '',
     instagram: '',

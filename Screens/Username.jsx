@@ -10,14 +10,15 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {colors} from '../utils/colors';
-import firestore, {Filter} from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
-import {setData} from '../Redux Toolkit/user';
+import {setUserData} from '../Redux Toolkit/user';
 const Username = ({route, navigation}) => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const dispatch = useDispatch();
-  const data = useSelector(state => state.userSlice.data);
+  const data = useSelector(state => state.dataSlice.userData);
+
   console.log(data);
   const setUsernameHandler = async () => {
     if (username.length > 5) {
@@ -40,7 +41,9 @@ const Username = ({route, navigation}) => {
           })
           .then(() => {
             dispatch(
-              setData({username: username.replaceAll(' ', '').toLowerCase()}),
+              setUserData({
+                username: username.replaceAll(' ', '').toLowerCase(),
+              }),
             );
             navigation.navigate('Dashboard');
           });
