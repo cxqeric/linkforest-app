@@ -16,14 +16,12 @@ import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import UploadIcon from 'react-native-vector-icons/Feather';
 import UserLinks from '../Components/UserLinks';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import {setData} from '../../Redux Toolkit/user';
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
-  const data = useSelector(state => state.dataSlice.userData);
-  const dispatch = useDispatch();
+  const data = useSelector(state => state.userSlice.data);
   const [profile, setProfile] = useState({
     name: '',
     description: '',
@@ -49,7 +47,6 @@ const Profile = () => {
       .collection('Link Forests')
       .doc(data.uid)
       .get();
-    dispatch(setData(user.data()));
     setProfile({
       username: user.data().username,
       uid: user.data().uid,

@@ -6,8 +6,7 @@ import {colors} from '../../utils/colors';
 import firestore from '@react-native-firebase/firestore';
 
 const Analytics = () => {
-  const data = useSelector(state => state.dataSlice.userData);
-
+  const data = useSelector(state => state.userSlice.data);
   const [analyticsData, setAnalyticsData] = useState();
 
   const formatDateString = date => {

@@ -18,7 +18,7 @@ import {useSelector} from 'react-redux';
 
 const Links = () => {
   const [loading, setLoading] = useState(false);
-  const data = useSelector(state => state.dataSlice.userData);
+  const data = useSelector(state => state.userSlice.data);
   const [websites, setWebsites] = useState([]);
 
   useEffect(() => {
