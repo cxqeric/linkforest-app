@@ -58,7 +58,6 @@ const SocialLinks = () => {
       .doc(data.uid)
       .get();
     if (user.data().socialLinks) {
-      console.log(user.data().socialLinks);
       setLinks({...user.data().socialLinks});
     }
   };
@@ -85,13 +84,14 @@ const SocialLinks = () => {
   };
 
   const socialLinksData = [
+    {key: 'envelope', placeholder: 'abc@gmail.com'},
     {key: 'github', placeholder: 'https://www.github.com/linkforest'},
     {key: 'linkedin', placeholder: 'https://www.linkedin.com/linkforest'},
     {key: 'instagram', placeholder: 'https://www.instagram.com/linkforest'},
     {key: 'facebook', placeholder: 'https://www.facebook.com/linkforest'},
     {key: 'twitter', placeholder: 'https://www.twitter.com/linkforest'},
     {key: 'threads', placeholder: 'https://www.threads.com/linkforest'},
-    {key: 'youtube', placeholder: 'https://www.youtube.com/linkforest'},
+    // {key: 'youtube', placeholder: 'https://www.youtube.com/linkforest'},
     {key: 'snapchat', placeholder: 'https://www.snapchat.com/linkforest'},
   ];
 
@@ -104,8 +104,13 @@ const SocialLinks = () => {
             key={linkData.key}
             icon={linkData.key}
             placeholder={linkData.placeholder}
-            value={links[linkData.key]}
-            onChangeText={text => handleSocialLinkChange(linkData.key, text)}
+            value={links[linkData.key === 'envelope' ? 'email' : linkData.key]}
+            onChangeText={text =>
+              handleSocialLinkChange(
+                linkData.key === 'envelope' ? 'email' : linkData.key,
+                text,
+              )
+            }
           />
         ))}
         <TouchableOpacity
@@ -126,6 +131,7 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: colors.light,
   },
   socialLinkCont: {
     width: '100%',
@@ -157,6 +163,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
   },
   saveTxt: {
     fontFamily: 'Montserrat-Medium',

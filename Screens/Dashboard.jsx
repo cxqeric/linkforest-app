@@ -7,6 +7,7 @@ import Themes from './Dashboard/Themes';
 import {colors} from '../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SocialLinks from './Dashboard/SocialLinks';
+import Analytics from './Dashboard/Analytics';
 const Dashboard = ({navigation}) => {
   const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,8 @@ const Dashboard = ({navigation}) => {
             iconName = focused ? 'color-filter' : 'color-filter-outline';
           } else if (route.name === 'Social Links') {
             iconName = 'logo-instagram';
+          } else if (route.name === 'Analytics') {
+            iconName = focused ? 'analytics' : 'analytics-outline';
           }
           return <Ionicons name={iconName} size={24} color={color} />;
         },
@@ -52,6 +55,11 @@ const Dashboard = ({navigation}) => {
       <Tab.Screen
         name="Links"
         component={Links}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Analytics"
+        component={Analytics}
         options={{headerShown: false}}
       />
       <Tab.Screen

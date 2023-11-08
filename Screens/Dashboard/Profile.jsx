@@ -47,11 +47,11 @@ const Profile = () => {
       .collection('Link Forests')
       .doc(data.uid)
       .get();
-    console.log(user.data());
     setProfile({
       username: user.data().username,
       uid: user.data().uid,
       name: user.data().name,
+      description: user.data().description,
       image: user.data().image,
     });
   };
@@ -138,6 +138,7 @@ export default Profile;
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
+    flex: 1,
   },
   title: {
     fontFamily: 'Montserrat-SemiBold',

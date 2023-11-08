@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors} from '../../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,6 +7,10 @@ const Navigation = ({title}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.navWrapper}>
+      <Image
+        source={require('../../assets/logo_dark.png')}
+        style={{width: 35, height: 35, objectFit: 'contain'}}
+      />
       <Text style={styles.navTxt}>{title}</Text>
       <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
         <Ionicons name={'settings-outline'} size={24} color={colors.dark} />
@@ -20,10 +24,9 @@ export default Navigation;
 const styles = StyleSheet.create({
   navWrapper: {
     width: '100%',
-    backgroundColor: colors.green,
-    elevation: 20,
+    backgroundColor: colors.light,
+    elevation: 10,
     paddingVertical: 18,
-    shadowColor: colors.green,
     marginBottom: 16,
     display: 'flex',
     flexDirection: 'row',
