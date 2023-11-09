@@ -5,11 +5,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ToastAndroid,
+  Modal,
+  TextInput,
 } from 'react-native';
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+  State,
+} from 'react-native-gesture-handler';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,6 +26,16 @@ const Links = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
   const [websites, setWebsites] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleStateChange = event => {
+    console.log(event.nativeEvent.state);
+    if (event.nativeEvent.state === State.END) {
+      if (event.nativeEvent.translationY > 150) {
+        setModalVisible(false);
+      }
+    }
+  };
 
   useEffect(() => {
     getDataHandler();
@@ -92,6 +108,11 @@ const Links = () => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Navigation title="LINKS" />
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => setModalVisible(true)}>
+        <Text style={styles.addTxt}>Add Link</Text>
+      </TouchableOpacity>
       <DraggableFlatList
         data={websites}
         onDragEnd={({data}) => saveChangesHandler(data)}
@@ -100,6 +121,35 @@ const Links = () => {
         style={{width: '100%'}}
         contentContainerStyle={styles.flatListContainer}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <PanGestureHandler onHandlerStateChange={handleStateChange}>
+          <View style={styles.modal}>
+            <View style={styles.slideBlock}></View>
+            <TouchableOpacity
+              style={{position: 'absolute', right: 30, top: 20}}
+              activeOpacity={0.8}
+              onPress={() => setModalVisible(false)}>
+              <Icon name="close" size={30} color={colors.gray} />
+            </TouchableOpacity>
+            <View style={{marginTop: 15}}>
+              <TextInput
+                placeholder="Website Title"
+                style={styles.inputField}
+              />
+              <TextInput placeholder="Website Link" style={styles.inputField} />
+              <TouchableOpacity
+                style={styles.addBtn}
+                onPress={() => setModalVisible(true)}>
+                <Text style={styles.addTxt}>Add Link</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </PanGestureHandler>
+      </Modal>
     </GestureHandlerRootView>
   );
 };
@@ -135,6 +185,60 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 14,
+  },
+  addBtn: {
+    backgroundColor: colors.green,
+    width: '80%',
+    alignSelf: 'center',
+    borderRadius: 100,
+    padding: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  addTxt: {
+    textAlign: 'center',
+    fontFamily: 'Montserrat-Bold',
+    color: colors.dark,
+    fontSize: 18,
+  },
+  inputField: {
+    fontFamily: 'Montserrat-Medium',
+    color: colors.dark,
+    fontSize: 14,
+    borderRadius: 6,
+    borderWidth: 1.4,
+    borderColor: colors.gray,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    width: '90%',
+    alignSelf: 'center',
+    marginBottom: 14,
+  },
+  slideBlock: {
+    height: 6,
+    backgroundColor: colors.gray,
+    width: 38,
+    alignSelf: 'center',
+    borderRadius: 100,
+    marginBottom: 20,
+    position: 'absolute',
+    top: 20,
+  },
+  modal: {
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: colors.light,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    elevation: 10,
+    width: '100%',
+    height: 260,
+    paddingTop: 20,
+    display: 'flex',
+    justifyContent: 'center',
   },
 });
 

@@ -18,6 +18,8 @@ import UploadIcon from 'react-native-vector-icons/Feather';
 import UserLinks from '../Components/UserLinks';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import {launchImageLibrary} from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
@@ -69,6 +71,51 @@ const Profile = () => {
         ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
       });
   };
+  const selectImageHandler = () => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
+      if (response.didCancel) {
+      } else if (response.error) {
+        ToastAndroid.show('Image Select Error', ToastAndroid.SHORT);
+      } else {
+        uploadImageHandler(response);
+        ToastAndroid.show('Uploading Image', ToastAndroid.SHORT);
+      }
+    });
+  };
+
+  const uploadImageHandler = response => {
+    const reference = storage().ref(`/Link Forests Profiles/${data.uid}`);
+    const imagePath = response.assets[0].uri;
+    const uploadTask = reference.putFile(imagePath);
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload is ${progress}% complete`);
+      },
+      error => {
+        ToastAndroid.show('Image Upload Error!', ToastAndroid.SHORT);
+        console.log('Image upload error:', error);
+      },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          setProfile({...profile, image: downloadURL});
+          setLoading(true);
+          firestore()
+            .collection('Link Forests')
+            .doc(data.uid)
+            .update({
+              image: downloadURL,
+            })
+            .then(() => {
+              setLoading(false);
+              ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
+            });
+        });
+      },
+    );
+  };
 
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -90,7 +137,10 @@ const Profile = () => {
                 style={{width: 100, height: 100, borderRadius: 120}}
               />
             )}
-            <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.uploadBtn}
+              activeOpacity={0.8}
+              onPress={selectImageHandler}>
               <Text style={styles.uploadTxt}>Upload</Text>
               <UploadIcon
                 name="upload"
@@ -210,10 +260,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     borderRadius: 6,
     borderWidth: 1.4,
-    width: '100%',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
     borderColor: colors.gray,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    width: '100%',
   },
   saveBtn: {
     backgroundColor: colors.green,

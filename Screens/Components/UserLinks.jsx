@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
   linkTxt: {
     color: colors.dark,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 16,
+    fontSize: 14,
   },
 });
