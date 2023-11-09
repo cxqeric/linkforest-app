@@ -5,7 +5,7 @@ const initialState = {
         name: "",
         username: "",
         email: "",
-        profile: "",
+        image: "",
         uid: ""
     }
 };

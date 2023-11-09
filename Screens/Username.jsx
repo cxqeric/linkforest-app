@@ -36,6 +36,13 @@ const Username = ({route, navigation}) => {
           .doc(route.params.data.uid)
           .set({
             themeType: 'default',
+            theme: 'Default',
+            customTheme: {
+              background: '#ffffff',
+              textColor: '#000',
+              linkBackground: '#e2e8f0',
+              linkColor: '#000',
+            },
             username: username.replaceAll(' ', '').toLowerCase(),
           })
           .then(() => {

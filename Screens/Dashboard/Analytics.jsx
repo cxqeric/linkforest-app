@@ -45,14 +45,17 @@ const Analytics = () => {
   const getThisMonthData = () => {
     const thisMonthData = Object.keys(analyticsData || {}).reduce(
       (acc, date) => {
-        if (new Date(date).getMonth() === new Date().getMonth()) {
+        if (
+          new Date(date).getMonth() === new Date().getMonth() &&
+          JSON.stringify(new Date(date).getDate()) ==
+            JSON.stringify(new Date().getFullYear()).slice(2)
+        ) {
           acc += analyticsData[date];
         }
         return acc;
       },
       0,
     );
-
     return thisMonthData;
   };
 
@@ -60,8 +63,8 @@ const Analytics = () => {
     const thisYearData = Object.keys(analyticsData || {}).reduce(
       (acc, date) => {
         if (
-          JSON.stringify(new Date().getFullYear()).slice(2) ===
-          new Date().getFullYear()
+          JSON.stringify(new Date(date).getDate()) ==
+          JSON.stringify(new Date().getFullYear()).slice(2)
         ) {
           acc += analyticsData[date];
         }
@@ -103,6 +106,21 @@ const Analytics = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
       <Navigation title={'ANALYTICS'} />
+      <Text
+        style={{
+          fontFamily: 'Montserrat-Bold',
+          color: colors.light,
+          marginBottom: 12,
+          fontSize: 16,
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+          backgroundColor: colors.green,
+          width: '100%',
+          textAlign: 'center',
+          paddingVertical: 10,
+        }}>
+        Experimental Feature!
+      </Text>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {cardData.map(item => (
           <View style={styles.card} key={item.index}>

@@ -37,7 +37,7 @@ const Home = ({navigation}) => {
                 name: user.displayName,
                 email: user.email,
                 uid: user.uid,
-                profile: user.photoURL,
+                image: user.photoURL,
                 username: documentSnapshot.data().username,
               }),
             );
@@ -48,9 +48,10 @@ const Home = ({navigation}) => {
                 name: user.displayName,
                 email: user.email,
                 uid: user.uid,
-                profile: user.photoURL,
+                image: user.photoURL,
               }),
             );
+            console.log(user.photoURL);
             navigation.navigate('Username', {data: {uid: user.uid}});
           }
         });

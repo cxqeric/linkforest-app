@@ -1,3 +1,4 @@
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,7 +12,6 @@ import {
   ToastAndroid,
   ActivityIndicator,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import UploadIcon from 'react-native-vector-icons/Feather';
@@ -25,58 +25,40 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
   const [profile, setProfile] = useState({
-    name: '',
-    description: '',
-    image:
-      'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
-    username: '',
+    name: data.name,
+    description: data.description,
+    image: data.image,
+    username: data.username,
   });
-  useEffect(() => {
-    setProfile({
-      username: data.username,
-      uid: data.uid,
-      name: data.name,
-      image: data.profile,
-    });
-  }, [data]);
 
-  useEffect(() => {
-    getDataHandler();
-  }, []);
-
-  const getDataHandler = async () => {
-    const user = await firestore()
-      .collection('Link Forests')
-      .doc(data.uid)
-      .get();
-    setProfile({
-      username: user.data().username,
-      uid: user.data().uid,
-      name: user.data().name,
-      description: user.data().description,
-      image: user.data().image,
-    });
-  };
-
-  const saveChangesHandler = () => {
+  const saveChangesHandler = async () => {
     setLoading(true);
-    firestore()
-      .collection('Link Forests')
-      .doc(data.uid)
-      .update({
-        ...profile,
-      })
-      .then(() => {
-        setLoading(false);
-        ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
-      });
+    try {
+      await firestore()
+        .collection('Link Forests')
+        .doc(data.uid)
+        .update(profile);
+      setLoading(false);
+      ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
+    } catch (error) {
+      setLoading(false);
+      ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
+    }
+    updateGoogleAccount();
   };
+
+  const updateGoogleAccount = async () => {
+    const update = {
+      displayName: profile.name,
+      photoURL: profile.image,
+    };
+
+    await firebase.auth().currentUser.updateProfile(update);
+  };
+
   const selectImageHandler = () => {
     launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.didCancel) {
-      } else if (response.error) {
-        ToastAndroid.show('Image Select Error', ToastAndroid.SHORT);
-      } else {
+      if (!response.didCancel && !response.error) {
         uploadImageHandler(response);
         ToastAndroid.show('Uploading Image', ToastAndroid.SHORT);
       }
@@ -87,6 +69,7 @@ const Profile = () => {
     const reference = storage().ref(`/Link Forests Profiles/${data.uid}`);
     const imagePath = response.assets[0].uri;
     const uploadTask = reference.putFile(imagePath);
+
     uploadTask.on(
       'state_changed',
       snapshot => {
@@ -105,17 +88,36 @@ const Profile = () => {
           firestore()
             .collection('Link Forests')
             .doc(data.uid)
-            .update({
-              image: downloadURL,
-            })
+            .update({image: downloadURL})
             .then(() => {
               setLoading(false);
               ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
+            })
+            .catch(error => {
+              setLoading(false);
+              ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
             });
         });
       },
     );
   };
+
+  useEffect(() => {
+    const getDataHandler = async () => {
+      try {
+        const user = await firestore()
+          .collection('Link Forests')
+          .doc(data.uid)
+          .get();
+        const userData = user.data();
+        setProfile(prevProfile => ({...prevProfile, ...userData}));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getDataHandler();
+  }, [data]);
 
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -124,19 +126,14 @@ const Profile = () => {
         <UserLinks username={profile.username} />
         <KeyboardAvoidingView style={styles.content}>
           <View style={styles.imageView}>
-            {!profile.image ? (
-              <Image
-                source={{
-                  uri: 'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
-                }}
-                style={{width: 100, height: 100, borderRadius: 120}}
-              />
-            ) : (
-              <Image
-                source={{uri: profile.image}}
-                style={{width: 100, height: 100, borderRadius: 120}}
-              />
-            )}
+            <Image
+              source={{
+                uri:
+                  profile.image ||
+                  'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
+              }}
+              style={{width: 100, height: 100, borderRadius: 120}}
+            />
             <TouchableOpacity
               style={styles.uploadBtn}
               activeOpacity={0.8}
@@ -156,6 +153,7 @@ const Profile = () => {
               style={styles.inputField}
               value={profile.name}
               onChangeText={text => setProfile({...profile, name: text})}
+              placeholder="Enter Display Name"
             />
           </View>
           <View style={styles.inputView}>
@@ -172,8 +170,9 @@ const Profile = () => {
             activeOpacity={0.8}
             style={styles.saveBtn}
             onPress={saveChangesHandler}>
-            {!loading && <Text style={styles.saveTxt}>Save Changes</Text>}
-            {loading && (
+            {!loading ? (
+              <Text style={styles.saveTxt}>Save Changes</Text>
+            ) : (
               <ActivityIndicator color={colors.light} size={'small'} />
             )}
           </TouchableOpacity>
@@ -189,11 +188,6 @@ const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
     flex: 1,
-  },
-  title: {
-    fontFamily: 'Montserrat-SemiBold',
-    color: colors.dark,
-    fontSize: 22,
   },
   imageView: {
     display: 'flex',

@@ -7,15 +7,12 @@ import {
   ToastAndroid,
   Modal,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -27,17 +24,11 @@ const Links = () => {
   const data = useSelector(state => state.userSlice.data);
   const [websites, setWebsites] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleStateChange = event => {
-    console.log(event.nativeEvent.state);
-    if (event.nativeEvent.state === State.END) {
-      if (event.nativeEvent.translationY > 150) {
-        setModalVisible(false);
-      }
-    }
-  };
+  const [newLink, setNewLink] = useState({title: '', link: ''});
+  const [editIndex, setEditIndex] = useState(-1);
 
   useEffect(() => {
+    setLoading(true);
     getDataHandler();
   }, []);
 
@@ -47,7 +38,6 @@ const Links = () => {
       result[index] = {link: item.link, title: item.title};
       return result;
     }, {});
-    setLoading(true);
     firestore()
       .collection('Link Forests')
       .doc(data.uid)
@@ -57,10 +47,7 @@ const Links = () => {
         },
         {merge: true},
       )
-      .then(() => {
-        setLoading(false);
-        ToastAndroid.show('Website Updated', ToastAndroid.BOTTOM);
-      });
+      .then(() => {});
   };
 
   const getDataHandler = async () => {
@@ -76,6 +63,28 @@ const Links = () => {
       }));
       setWebsites(dataArray);
     }
+    setLoading(false);
+  };
+
+  const addNewLinkHandler = () => {
+    if (newLink.title && newLink.link) {
+      const updatedWebsites = [...websites];
+      if (editIndex !== -1) {
+        updatedWebsites[editIndex] = {...newLink, index: editIndex};
+        setEditIndex(-1);
+      } else {
+        updatedWebsites.push({...newLink, index: websites.length});
+      }
+      saveChangesHandler(updatedWebsites);
+      setNewLink({title: '', link: ''});
+      setModalVisible(false);
+    }
+  };
+
+  const editLinkHandler = index => {
+    setEditIndex(index);
+    setNewLink({title: websites[index].title, link: websites[index].link});
+    setModalVisible(true);
   };
 
   const renderItem = ({item, drag, isActive}) => {
@@ -85,7 +94,8 @@ const Links = () => {
           style={styles.card}
           onLongPress={drag}
           disabled={isActive}
-          activeOpacity={0.8}>
+          activeOpacity={0.8}
+          onPress={() => editLinkHandler(item.index)}>
           <Icon
             name="ellipsis-vertical-outline"
             color={colors.gray}
@@ -100,6 +110,13 @@ const Links = () => {
               {item.link}
             </Text>
           </View>
+          {editIndex === item.index && (
+            <TouchableOpacity
+              onPress={() => setEditIndex(-1)}
+              style={{padding: 10}}>
+              <Icon name="checkmark" size={24} color={colors.green} />
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       </ScaleDecorator>
     );
@@ -108,47 +125,64 @@ const Links = () => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Navigation title="LINKS" />
-      <TouchableOpacity
-        style={styles.addBtn}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.addTxt}>Add Link</Text>
-      </TouchableOpacity>
-      <DraggableFlatList
-        data={websites}
-        onDragEnd={({data}) => saveChangesHandler(data)}
-        keyExtractor={item => item.index.toString()}
-        renderItem={renderItem}
-        style={{width: '100%'}}
-        contentContainerStyle={styles.flatListContainer}
-      />
+      {!loading && (
+        <>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => setModalVisible(true)}>
+            <Text style={styles.addTxt}>Add Link</Text>
+          </TouchableOpacity>
+          <DraggableFlatList
+            data={websites}
+            onDragEnd={({data}) => saveChangesHandler(data)}
+            keyExtractor={item => item.index.toString()}
+            renderItem={renderItem}
+            style={{width: '100%', height: '100%'}}
+            contentContainerStyle={styles.flatListContainer}
+          />
+        </>
+      )}
+      {loading && (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <ActivityIndicator color={colors.dark} size={'large'} />
+        </View>
+      )}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
-        <PanGestureHandler onHandlerStateChange={handleStateChange}>
-          <View style={styles.modal}>
-            <View style={styles.slideBlock}></View>
+        <View style={styles.modal}>
+          <View style={styles.slideBlock}></View>
+          <TouchableOpacity
+            style={{position: 'absolute', right: 30, top: 20}}
+            activeOpacity={0.8}
+            onPress={() => setModalVisible(false)}>
+            <Icon name="close" size={30} color={colors.gray} />
+          </TouchableOpacity>
+          <View style={{marginTop: 15}}>
+            <TextInput
+              placeholder="Website Title"
+              style={styles.inputField}
+              placeholderTextColor={colors.gray}
+              value={newLink.title}
+              onChangeText={text => setNewLink({...newLink, title: text})}
+            />
+            <TextInput
+              placeholder="Website Link"
+              style={styles.inputField}
+              placeholderTextColor={colors.gray}
+              value={newLink.link}
+              onChangeText={text => setNewLink({...newLink, link: text})}
+            />
             <TouchableOpacity
-              style={{position: 'absolute', right: 30, top: 20}}
-              activeOpacity={0.8}
-              onPress={() => setModalVisible(false)}>
-              <Icon name="close" size={30} color={colors.gray} />
+              style={styles.addBtn}
+              onPress={addNewLinkHandler}
+              activeOpacity={0.8}>
+              <Text style={styles.addTxt}>Add Link</Text>
             </TouchableOpacity>
-            <View style={{marginTop: 15}}>
-              <TextInput
-                placeholder="Website Title"
-                style={styles.inputField}
-              />
-              <TextInput placeholder="Website Link" style={styles.inputField} />
-              <TouchableOpacity
-                style={styles.addBtn}
-                onPress={() => setModalVisible(true)}>
-                <Text style={styles.addTxt}>Add Link</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </PanGestureHandler>
+        </View>
       </Modal>
     </GestureHandlerRootView>
   );
@@ -179,7 +213,7 @@ const styles = StyleSheet.create({
   link: {
     fontFamily: 'Montserrat-Medium',
     color: colors.dark,
-    fontSize: 15,
+    fontSize: 14,
   },
   flatListContainer: {
     display: 'flex',
@@ -216,16 +250,6 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     marginBottom: 14,
-  },
-  slideBlock: {
-    height: 6,
-    backgroundColor: colors.gray,
-    width: 38,
-    alignSelf: 'center',
-    borderRadius: 100,
-    marginBottom: 20,
-    position: 'absolute',
-    top: 20,
   },
   modal: {
     position: 'absolute',

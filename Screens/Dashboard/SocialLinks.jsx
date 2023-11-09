@@ -20,7 +20,7 @@ const SocialLinkInput = ({icon, placeholder, value, onChangeText}) => {
   return (
     <View style={styles.socialLinkCont}>
       <View>
-        <Icon name={icon} color={colors.dark} size={24} style={{width: 30}} />
+        <Icon name={icon} color={colors.dark} size={22} style={{width: 30}} />
       </View>
       <TextInput
         style={styles.inputField}
@@ -59,6 +59,7 @@ const SocialLinks = () => {
       .get();
     if (user.data().socialLinks) {
       setLinks({...user.data().socialLinks});
+      console.log(user.data().socialLinks);
     }
   };
 
@@ -84,15 +85,43 @@ const SocialLinks = () => {
   };
 
   const socialLinksData = [
-    {key: 'envelope', placeholder: 'abc@gmail.com'},
-    {key: 'github', placeholder: 'https://www.github.com/linkforest'},
-    {key: 'linkedin', placeholder: 'https://www.linkedin.com/linkforest'},
-    {key: 'instagram', placeholder: 'https://www.instagram.com/linkforest'},
-    {key: 'facebook', placeholder: 'https://www.facebook.com/linkforest'},
-    {key: 'twitter', placeholder: 'https://www.twitter.com/linkforest'},
-    {key: 'threads', placeholder: 'https://www.threads.com/linkforest'},
-    // {key: 'youtube', placeholder: 'https://www.youtube.com/linkforest'},
-    {key: 'snapchat', placeholder: 'https://www.snapchat.com/linkforest'},
+    {icon: 'envelope', name: 'email', placeholder: 'abc@gmail.com'},
+    {
+      icon: 'github',
+      name: 'github',
+      placeholder: 'https://www.github.com/linkforest',
+    },
+    {
+      icon: 'linkedin',
+      name: 'linkedin',
+      placeholder: 'https://www.linkedin.com/linkforest',
+    },
+    {
+      icon: 'instagram',
+      name: 'instagram',
+      placeholder: 'https://www.instagram.com/linkforest',
+    },
+    {
+      icon: 'facebook',
+      name: 'facebook',
+      placeholder: 'https://www.facebook.com/linkforest',
+    },
+    {
+      icon: 'x-twitter',
+      name: 'twitter',
+      placeholder: 'https://www.twitter.com/linkforest',
+    },
+    {
+      icon: 'threads',
+      name: 'threads',
+      placeholder: 'https://www.threads.com/linkforest',
+    },
+    // {icon:"youtube",name: 'youtube', placeholder: 'https://www.youtube.com/linkforest'},
+    {
+      icon: 'snapchat',
+      name: 'snapchat',
+      placeholder: 'https://www.snapchat.com/linkforest',
+    },
   ];
 
   return (
@@ -101,16 +130,11 @@ const SocialLinks = () => {
       <ScrollView style={{width: '90%'}}>
         {socialLinksData.map(linkData => (
           <SocialLinkInput
-            key={linkData.key}
-            icon={linkData.key}
+            key={linkData.name}
+            icon={linkData.icon}
             placeholder={linkData.placeholder}
-            value={links[linkData.key === 'envelope' ? 'email' : linkData.key]}
-            onChangeText={text =>
-              handleSocialLinkChange(
-                linkData.key === 'envelope' ? 'email' : linkData.key,
-                text,
-              )
-            }
+            value={links[linkData.name]}
+            onChangeText={text => handleSocialLinkChange(linkData.key, text)}
           />
         ))}
         <TouchableOpacity
@@ -142,17 +166,17 @@ const styles = StyleSheet.create({
     borderColor: colors.dark,
     borderWidth: 1.4,
     paddingHorizontal: 10,
-    marginBottom: 22,
+    marginBottom: 16,
     borderRadius: 8,
   },
   inputField: {
     fontFamily: 'Montserrat-Medium',
     color: colors.dark,
-    fontSize: 14,
+    fontSize: 13,
     borderRadius: 6,
     width: '94%',
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   saveBtn: {
     backgroundColor: colors.green,
@@ -164,6 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 2,
   },
   saveTxt: {
     fontFamily: 'Montserrat-Medium',
