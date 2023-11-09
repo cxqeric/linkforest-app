@@ -16,41 +16,43 @@ import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import UploadIcon from 'react-native-vector-icons/Feather';
 import UserLinks from '../Components/UserLinks';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
+import {firebase} from '@react-native-firebase/auth';
+import {setData} from '../../Redux Toolkit/user';
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
-  const [profile, setProfile] = useState({
-    name: data.name,
-    description: data.description,
-    image: data.image,
-    username: data.username,
-  });
+  const dispatch = useDispatch();
 
   const saveChangesHandler = async () => {
-    setLoading(true);
-    try {
-      await firestore()
-        .collection('Link Forests')
-        .doc(data.uid)
-        .update(profile);
-      setLoading(false);
-      ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
-    } catch (error) {
-      setLoading(false);
-      ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
+    if (data.description) {
+      setLoading(true);
+      try {
+        await firestore()
+          .collection('Link Forests')
+          .doc(data.uid)
+          .update({...data});
+        setLoading(false);
+        ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
+      }
+      updateGoogleAccount();
+    } else {
+      ToastAndroid.show('Add Description', ToastAndroid.SHORT);
     }
-    updateGoogleAccount();
   };
 
   const updateGoogleAccount = async () => {
     const update = {
-      displayName: profile.name,
-      photoURL: profile.image,
+      displayName: data.name,
+      photoURL: data.image,
     };
 
     await firebase.auth().currentUser.updateProfile(update);
@@ -83,7 +85,7 @@ const Profile = () => {
       },
       () => {
         uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          setProfile({...profile, image: downloadURL});
+          dispatch(setData({image: downloadURL}));
           setLoading(true);
           firestore()
             .collection('Link Forests')
@@ -95,6 +97,7 @@ const Profile = () => {
             })
             .catch(error => {
               setLoading(false);
+              console.log(error);
               ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
             });
         });
@@ -110,26 +113,26 @@ const Profile = () => {
           .doc(data.uid)
           .get();
         const userData = user.data();
-        setProfile(prevProfile => ({...prevProfile, ...userData}));
+        dispatch(setData(userData));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     getDataHandler();
-  }, [data]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.wrapper}>
       <Navigation title={'PROFILE'} />
       <ScrollView style={{width: '90%'}}>
-        <UserLinks username={profile.username} />
+        <UserLinks username={data.username} />
         <KeyboardAvoidingView style={styles.content}>
           <View style={styles.imageView}>
             <Image
               source={{
                 uri:
-                  profile.image ||
+                  data.image ||
                   'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
               }}
               style={{width: 100, height: 100, borderRadius: 120}}
@@ -151,8 +154,8 @@ const Profile = () => {
             <Text style={styles.inputTxt}>Display Name</Text>
             <TextInput
               style={styles.inputField}
-              value={profile.name}
-              onChangeText={text => setProfile({...profile, name: text})}
+              value={data.name}
+              onChangeText={text => dispatch(setData({name: text}))}
               placeholder="Enter Display Name"
             />
           </View>
@@ -161,8 +164,8 @@ const Profile = () => {
             <TextInput
               multiline={true}
               style={styles.textarea}
-              value={profile.description}
-              onChangeText={text => setProfile({...profile, description: text})}
+              value={data.description}
+              onChangeText={text => dispatch(setData({description: text}))}
               placeholder="Enter your description"
             />
           </View>

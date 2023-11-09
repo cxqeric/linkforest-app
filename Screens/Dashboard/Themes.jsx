@@ -10,8 +10,10 @@ import {
 import React from 'react';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
+import {useSelector} from 'react-redux';
 
 const Themes = () => {
+  const data = useSelector(state => state.userSlice.data);
   const defaultThemeSelectHandler = type => {
     let update = {};
     if (type === 'default') {
@@ -175,37 +177,37 @@ const Themes = () => {
               flexWrap: 'wrap',
               justifyContent: 'space-evenly',
             }}>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/Default.png')}
                 style={styles.imageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/LinkForest.png')}
                 style={styles.imageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/Dark.png')}
                 style={styles.imageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/Minimal.png')}
                 style={styles.imageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/ShadesOfSky.png')}
                 style={styles.imageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.imageContainer}>
+            <TouchableOpacity style={styles.imageContainer} activeOpacity={0.8}>
               <Image
                 source={require('../../assets/themes/SkyBlue.png')}
                 style={styles.imageStyle}

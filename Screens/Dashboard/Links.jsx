@@ -27,11 +27,6 @@ const Links = () => {
   const [newLink, setNewLink] = useState({title: '', link: ''});
   const [editIndex, setEditIndex] = useState(-1);
 
-  useEffect(() => {
-    setLoading(true);
-    getDataHandler();
-  }, []);
-
   const saveChangesHandler = updatedData => {
     setWebsites(updatedData);
     const dataObject = updatedData.reduce((result, item, index) => {
@@ -50,21 +45,16 @@ const Links = () => {
       .then(() => {});
   };
 
-  const getDataHandler = async () => {
-    const user = await firestore()
-      .collection('Link Forests')
-      .doc(data.uid)
-      .get();
-    if (user.data().websites) {
-      const dataArray = Object.keys(user.data().websites).map(index => ({
+  useEffect(() => {
+    if (data.websites) {
+      const dataArray = Object.keys(data.websites).map(index => ({
         index: parseInt(index),
-        link: user.data().websites[index].link,
-        title: user.data().websites[index].title,
+        link: data.websites[index].link,
+        title: data.websites[index].title,
       }));
       setWebsites(dataArray);
     }
-    setLoading(false);
-  };
+  }, [data]);
 
   const addNewLinkHandler = () => {
     if (newLink.title && newLink.link) {
