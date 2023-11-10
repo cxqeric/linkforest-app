@@ -7,6 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 
 const Analytics = () => {
   const data = useSelector(state => state.userSlice.data);
+  const uid = useSelector(state => state.userSlice.uid);
   const [analyticsData, setAnalyticsData] = useState();
 
   const formatDateString = date => {
@@ -17,7 +18,7 @@ const Analytics = () => {
   };
 
   useEffect(() => {
-    const roomRef = firestore().collection('Analytics').doc(data.uid);
+    const roomRef = firestore().collection('Analytics').doc(uid);
     const unsubscribe = roomRef.onSnapshot(documentSnapshot => {
       if (documentSnapshot.exists) {
         setAnalyticsData(documentSnapshot.data());

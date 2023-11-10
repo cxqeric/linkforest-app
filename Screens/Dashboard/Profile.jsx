@@ -26,15 +26,16 @@ import {setData} from '../../Redux Toolkit/user';
 const Profile = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
+  const uid = useSelector(state => state.userSlice.uid);
   const dispatch = useDispatch();
-
+  const [mainDataLoading, setMainDataLoading] = useState(false);
   const saveChangesHandler = async () => {
     if (data.description) {
       setLoading(true);
       try {
         await firestore()
           .collection('Link Forests')
-          .doc(data.uid)
+          .doc(uid)
           .update({...data});
         setLoading(false);
         ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
@@ -43,19 +44,9 @@ const Profile = () => {
         console.log(error);
         ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
       }
-      updateGoogleAccount();
     } else {
       ToastAndroid.show('Add Description', ToastAndroid.SHORT);
     }
-  };
-
-  const updateGoogleAccount = async () => {
-    const update = {
-      displayName: data.name,
-      photoURL: data.image,
-    };
-
-    await firebase.auth().currentUser.updateProfile(update);
   };
 
   const selectImageHandler = () => {
@@ -68,7 +59,7 @@ const Profile = () => {
   };
 
   const uploadImageHandler = response => {
-    const reference = storage().ref(`/Link Forests Profiles/${data.uid}`);
+    const reference = storage().ref(`/Link Forests Profiles/${uid}`);
     const imagePath = response.assets[0].uri;
     const uploadTask = reference.putFile(imagePath);
 
@@ -89,7 +80,7 @@ const Profile = () => {
           setLoading(true);
           firestore()
             .collection('Link Forests')
-            .doc(data.uid)
+            .doc(uid)
             .update({image: downloadURL})
             .then(() => {
               setLoading(false);
@@ -107,15 +98,19 @@ const Profile = () => {
 
   useEffect(() => {
     const getDataHandler = async () => {
+      setMainDataLoading(true);
       try {
         const user = await firestore()
           .collection('Link Forests')
-          .doc(data.uid)
+          .doc(uid)
           .get();
         const userData = user.data();
+        delete userData.updatedTime;
         dispatch(setData(userData));
+        setMainDataLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setMainDataLoading(false);
       }
     };
 
@@ -125,62 +120,69 @@ const Profile = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
       <Navigation title={'PROFILE'} />
-      <ScrollView style={{width: '90%'}}>
-        <UserLinks username={data.username} />
-        <KeyboardAvoidingView style={styles.content}>
-          <View style={styles.imageView}>
-            <Image
-              source={{
-                uri:
-                  data.image ||
-                  'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
-              }}
-              style={{width: 100, height: 100, borderRadius: 120}}
-            />
-            <TouchableOpacity
-              style={styles.uploadBtn}
-              activeOpacity={0.8}
-              onPress={selectImageHandler}>
-              <Text style={styles.uploadTxt}>Upload</Text>
-              <UploadIcon
-                name="upload"
-                size={18}
-                color={colors.green}
-                style={{marginLeft: 6}}
+      {mainDataLoading && (
+        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+          <ActivityIndicator color={colors.dark} size={'large'} />
+        </View>
+      )}
+      {!mainDataLoading && (
+        <ScrollView style={{width: '90%'}}>
+          <UserLinks username={data.username} />
+          <KeyboardAvoidingView style={styles.content}>
+            <View style={styles.imageView}>
+              <Image
+                source={{
+                  uri:
+                    data.image ||
+                    'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
+                }}
+                style={{width: 100, height: 100, borderRadius: 120}}
               />
+              <TouchableOpacity
+                style={styles.uploadBtn}
+                activeOpacity={0.8}
+                onPress={selectImageHandler}>
+                <Text style={styles.uploadTxt}>Upload</Text>
+                <UploadIcon
+                  name="upload"
+                  size={18}
+                  color={colors.green}
+                  style={{marginLeft: 6}}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.inputView}>
+              <Text style={styles.inputTxt}>Display Name</Text>
+              <TextInput
+                style={styles.inputField}
+                value={data.name}
+                onChangeText={text => dispatch(setData({name: text}))}
+                placeholder="Enter Display Name"
+              />
+            </View>
+            <View style={styles.inputView}>
+              <Text style={styles.inputTxt}>Description</Text>
+              <TextInput
+                multiline={true}
+                style={styles.textarea}
+                value={data.description}
+                onChangeText={text => dispatch(setData({description: text}))}
+                placeholder="Enter your description"
+              />
+            </View>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.saveBtn}
+              onPress={saveChangesHandler}>
+              {!loading ? (
+                <Text style={styles.saveTxt}>Save Changes</Text>
+              ) : (
+                <ActivityIndicator color={colors.light} size={'small'} />
+              )}
             </TouchableOpacity>
-          </View>
-          <View style={styles.inputView}>
-            <Text style={styles.inputTxt}>Display Name</Text>
-            <TextInput
-              style={styles.inputField}
-              value={data.name}
-              onChangeText={text => dispatch(setData({name: text}))}
-              placeholder="Enter Display Name"
-            />
-          </View>
-          <View style={styles.inputView}>
-            <Text style={styles.inputTxt}>Description</Text>
-            <TextInput
-              multiline={true}
-              style={styles.textarea}
-              value={data.description}
-              onChangeText={text => dispatch(setData({description: text}))}
-              placeholder="Enter your description"
-            />
-          </View>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.saveBtn}
-            onPress={saveChangesHandler}>
-            {!loading ? (
-              <Text style={styles.saveTxt}>Save Changes</Text>
-            ) : (
-              <ActivityIndicator color={colors.light} size={'small'} />
-            )}
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </ScrollView>
+          </KeyboardAvoidingView>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };

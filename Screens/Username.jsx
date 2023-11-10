@@ -10,15 +10,13 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {colors} from '../utils/colors';
-import firestore, {Filter} from '@react-native-firebase/firestore';
-import {useDispatch, useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import {useDispatch} from 'react-redux';
 import {setData} from '../Redux Toolkit/user';
 const Username = ({route, navigation}) => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const dispatch = useDispatch();
-  const data = useSelector(state => state.userSlice.data);
-  console.log(data);
   const setUsernameHandler = async () => {
     if (username.length > 5) {
       ToastAndroid.show('Checking Username', ToastAndroid.BOTTOM);
@@ -35,14 +33,7 @@ const Username = ({route, navigation}) => {
           .collection('Link Forests')
           .doc(route.params.data.uid)
           .set({
-            themeType: 'default',
             theme: 'Default',
-            customTheme: {
-              background: '#ffffff',
-              textColor: '#000',
-              linkBackground: '#e2e8f0',
-              linkColor: '#000',
-            },
             username: username.replaceAll(' ', '').toLowerCase(),
           })
           .then(() => {

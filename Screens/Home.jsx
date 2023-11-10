@@ -16,7 +16,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {WEB_CLIENT_ID} from '../Config';
 import {useDispatch} from 'react-redux';
-import {setData} from '../Redux Toolkit/user';
+import {setData, setUid} from '../Redux Toolkit/user';
 import firestore from '@react-native-firebase/firestore';
 
 const Home = ({navigation}) => {
@@ -32,26 +32,10 @@ const Home = ({navigation}) => {
         .get()
         .then(documentSnapshot => {
           if (documentSnapshot.exists) {
-            dispatch(
-              setData({
-                name: user.displayName,
-                email: user.email,
-                uid: user.uid,
-                image: user.photoURL,
-                username: documentSnapshot.data().username,
-              }),
-            );
+            dispatch(setUid(user.uid));
             navigation.navigate('Dashboard');
           } else {
-            dispatch(
-              setData({
-                name: user.displayName,
-                email: user.email,
-                uid: user.uid,
-                image: user.photoURL,
-              }),
-            );
-            console.log(user.photoURL);
+            dispatch(setUid(user.uid));
             navigation.navigate('Username', {data: {uid: user.uid}});
           }
         });

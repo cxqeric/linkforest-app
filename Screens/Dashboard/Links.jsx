@@ -22,6 +22,7 @@ import {useSelector} from 'react-redux';
 const Links = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
+  const uid = useSelector(state => state.userSlice.uid);
   const [websites, setWebsites] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newLink, setNewLink] = useState({title: '', link: ''});
@@ -35,7 +36,7 @@ const Links = () => {
     }, {});
     firestore()
       .collection('Link Forests')
-      .doc(data.uid)
+      .doc(uid)
       .set(
         {
           websites: dataObject,

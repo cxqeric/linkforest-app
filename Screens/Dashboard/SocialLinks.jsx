@@ -32,6 +32,7 @@ const SocialLinkInput = ({icon, placeholder, value, onChangeText}) => (
 const SocialLinks = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
+  const uid = useSelector(state => state.userSlice.uid);
   const [links, setLinks] = useState({...data.socialLinks});
 
   const saveChangesHandler = async () => {
@@ -39,7 +40,7 @@ const SocialLinks = () => {
     try {
       await firestore()
         .collection('Link Forests')
-        .doc(data.uid)
+        .doc(uid)
         .update({
           socialLinks: {...links},
         });

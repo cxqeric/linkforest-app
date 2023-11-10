@@ -2,6 +2,7 @@ import {Linking, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const UserLinks = ({username}) => {
   const linkForestLink = [
@@ -15,6 +16,9 @@ const UserLinks = ({username}) => {
     },
   ];
 
+  const linkCopyHandler = link => {
+    Clipboard.setString(link);
+  };
   const LinkCard = data => {
     return (
       <View
@@ -28,16 +32,20 @@ const UserLinks = ({username}) => {
         <Text
           style={styles.linkTxt}
           onPress={() => Linking.openURL(`https://${data.link}/${username}`)}>
-          {data.link}/{username}
+          <Text
+            style={{color: colors.green, fontFamily: 'Montserrat-SemiBold'}}>
+            {data.link}
+          </Text>
+          /{username}
         </Text>
         <View
           style={{
             flexDirection: 'row',
           }}>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
-            <Icon name="share-social-outline" color={colors.dark} size={18} />
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.iconBtn}
+            onPress={() => linkCopyHandler(`https://${data.link}/${username}`)}>
             <Icon name="copy-outline" color={colors.dark} size={18} />
           </TouchableOpacity>
         </View>
@@ -84,6 +92,9 @@ const styles = StyleSheet.create({
   linkTxt: {
     color: colors.dark,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
+    fontSize: 15,
+    maxWidth: '80%',
+    lineHeight: 20,
+    marginBottom: 6,
   },
 });
