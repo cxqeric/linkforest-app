@@ -7,7 +7,7 @@ import Dashboard from './Screens/Dashboard';
 import Profile from './Screens/Dashboard/Profile';
 import Links from './Screens/Dashboard/SocialLinks';
 import Themes from './Screens/Dashboard/Themes';
-import Settings from './Screens/Dashboard/Settings';
+import Settings from './Screens/Settings';
 import {Provider} from 'react-redux';
 import {store} from './Redux Toolkit/store';
 import Username from './Screens/Username';

@@ -21,7 +21,6 @@ const Themes = () => {
   const dispatch = useDispatch();
 
   const saveChangesHandler = async theme => {
-    // setLoading(true);
     try {
       await firestore()
         .collection('Link Forests')
@@ -29,18 +28,148 @@ const Themes = () => {
         .update({
           ...theme,
         });
-      // setLoading(false);
       ToastAndroid.show('Theme Updated', ToastAndroid.BOTTOM);
     } catch (error) {
-      // setLoading(false);
       console.log(error);
       ToastAndroid.show('Error updating Theme', ToastAndroid.SHORT);
     }
   };
-  const themeChangeHandler = theme => {
-    saveChangesHandler(theme);
-    dispatch(setData({...theme}));
+
+  const themeChangeHandler = type => {
+    if (type === 'Default') {
+      dispatch(
+        setData({
+          theme: 'Default',
+          customTheme: {
+            background: '#ffffff',
+            textColor: '#000',
+            linkBackground: '#e2e8f0',
+            linkColor: '#000',
+          },
+        }),
+      );
+      update = {
+        theme: 'Default',
+        customTheme: {
+          background: '#ffffff',
+          textColor: '#000',
+          linkBackground: '#e2e8f0',
+          linkColor: '#000',
+        },
+      };
+    } else if (type === 'Dark') {
+      dispatch(
+        setData({
+          theme: 'Dark',
+          customTheme: {
+            background: '#181818',
+            textColor: '#ffffff',
+            linkBackground: '#e7e7e7',
+            linkColor: '#181818',
+          },
+        }),
+      );
+      update = {
+        theme: 'Dark',
+        customTheme: {
+          background: '#181818',
+          textColor: '#ffffff',
+          linkBackground: '#e7e7e7',
+          linkColor: '#181818',
+        },
+      };
+    } else if (type === 'Minimal') {
+      dispatch(
+        setData({
+          theme: 'Minimal',
+          customTheme: {
+            background: '#fff',
+            textColor: '#000',
+            linkBackground: '#fff',
+            linkColor: '#000',
+            stroke: '#000',
+          },
+        }),
+      );
+      update = {
+        theme: 'Minimal',
+        customTheme: {
+          background: '#fff',
+          textColor: '#000',
+          linkBackground: '#fff',
+          linkColor: '#000',
+          stroke: '#000',
+        },
+      };
+    } else if (type === 'Link Forest') {
+      dispatch(
+        setData({
+          theme: 'Link Forest',
+          customTheme: {
+            background: '#d1fae5',
+            textColor: '#000',
+            linkBackground: '#34d399',
+            linkColor: '#000',
+          },
+        }),
+      );
+      update = {
+        theme: 'Link Forest',
+        customTheme: {
+          background: '#d1fae5',
+          textColor: '#000',
+          linkBackground: '#34d399',
+          linkColor: '#000',
+        },
+      };
+    } else if (type === 'Sky Blue') {
+      dispatch(
+        setData({
+          theme: 'Sky Blue',
+          customTheme: {
+            background: '#fff',
+            textColor: '#000',
+            linkBackground: '#38bdf8',
+            linkColor: '#000',
+          },
+        }),
+      );
+      update = {
+        theme: 'Sky Blue',
+        customTheme: {
+          background: '#fff',
+          textColor: '#000',
+          linkBackground: '#38bdf8',
+          linkColor: '#000',
+        },
+      };
+    } else if (type === 'Shades Of Sky') {
+      dispatch(
+        setData({
+          theme: 'Shades Of Sky',
+          customTheme: {
+            background: '#fff',
+            textColor: '#000',
+            linkBackground: '#bae6fd',
+            linkColor: '#0c4a6e',
+            stroke: '#0c4a6e',
+          },
+        }),
+      );
+      update = {
+        theme: 'Shades Of Sky',
+        customTheme: {
+          background: '#fff',
+          textColor: '#000',
+          linkBackground: '#bae6fd',
+          linkColor: '#0c4a6e',
+          stroke: '#0c4a6e',
+        },
+      };
+    }
+    saveChangesHandler(update);
   };
+
   return (
     <SafeAreaView style={styles.wrapper}>
       <Navigation title={'THEMES'} />
@@ -54,7 +183,7 @@ const Themes = () => {
               justifyContent: 'space-evenly',
             }}>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Default'})}
+              onPress={() => themeChangeHandler('Default')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Default' && {
@@ -69,7 +198,7 @@ const Themes = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Link Forest'})}
+              onPress={() => themeChangeHandler('Link Forest')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Link Forest' && {
@@ -84,7 +213,7 @@ const Themes = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Dark'})}
+              onPress={() => themeChangeHandler('Dark')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Dark' && {
@@ -99,7 +228,7 @@ const Themes = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Minimal'})}
+              onPress={() => themeChangeHandler('Minimal')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Minimal' && {
@@ -114,7 +243,7 @@ const Themes = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Shades Of Sky'})}
+              onPress={() => themeChangeHandler('Shades Of Sky')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Shades Of Sky' && {
@@ -129,7 +258,7 @@ const Themes = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => themeChangeHandler({theme: 'Sky Blue'})}
+              onPress={() => themeChangeHandler('Sky Blue')}
               style={[
                 styles.imageContainer,
                 data?.theme === 'Sky Blue' && {
@@ -145,6 +274,16 @@ const Themes = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <Text
+          style={{
+            color: colors.dark,
+            fontFamily: 'Montserrat-Medium',
+            textAlign: 'center',
+            lineHeight: 22,
+          }}>
+          Themes are specially designed for the Links, So Add Links To See The
+          Difference!
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

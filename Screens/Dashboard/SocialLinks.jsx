@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,8 +13,9 @@ import {
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import {setData} from '../../Redux Toolkit/user';
 
 const SocialLinkInput = ({icon, placeholder, value, onChangeText}) => (
   <View style={styles.socialLinkCont}>
@@ -34,7 +35,7 @@ const SocialLinks = () => {
   const data = useSelector(state => state.userSlice.data);
   const uid = useSelector(state => state.userSlice.uid);
   const [links, setLinks] = useState({...data.socialLinks});
-
+  const dispatch = useDispatch();
   const saveChangesHandler = async () => {
     setLoading(true);
     try {
@@ -44,6 +45,7 @@ const SocialLinks = () => {
         .update({
           socialLinks: {...links},
         });
+      dispatch(setData({socialLinks: {...links}}));
       setLoading(false);
       ToastAndroid.show('Social Links Updated', ToastAndroid.BOTTOM);
     } catch (error) {

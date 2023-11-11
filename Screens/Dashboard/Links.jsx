@@ -17,7 +17,8 @@ import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {setData} from '../../Redux Toolkit/user';
 
 const Links = () => {
   const [loading, setLoading] = useState(false);
@@ -27,22 +28,20 @@ const Links = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newLink, setNewLink] = useState({title: '', link: ''});
   const [editIndex, setEditIndex] = useState(-1);
-
+  const dispatch = useDispatch();
   const saveChangesHandler = updatedData => {
     setWebsites(updatedData);
     const dataObject = updatedData.reduce((result, item, index) => {
       result[index] = {link: item.link, title: item.title};
       return result;
     }, {});
+    dispatch(setData({websites: dataObject}));
     firestore()
       .collection('Link Forests')
       .doc(uid)
-      .set(
-        {
-          websites: dataObject,
-        },
-        {merge: true},
-      )
+      .update({
+        websites: dataObject,
+      })
       .then(() => {});
   };
 
@@ -74,8 +73,33 @@ const Links = () => {
 
   const editLinkHandler = index => {
     setEditIndex(index);
-    setNewLink({title: websites[index].title, link: websites[index].link});
+    let correctIndex = 0;
+    Object.keys(websites).map(item => {
+      if (websites[item].index === index) {
+        correctIndex = item;
+      }
+    });
+    setNewLink({
+      title: websites[correctIndex].title,
+      link: websites[correctIndex].link,
+    });
     setModalVisible(true);
+  };
+
+  const deleteLinkHandler = () => {
+    if (editIndex !== -1) {
+      const updatedWebsites = websites.filter((_, i) => i !== editIndex);
+
+      const newWebsites = updatedWebsites.map((item, index) => ({
+        index,
+        link: item.link,
+        title: item.title,
+      }));
+      saveChangesHandler(newWebsites);
+      setModalVisible(false);
+      setEditIndex(-1);
+      setNewLink({link: '', title: ''});
+    }
   };
 
   const renderItem = ({item, drag, isActive}) => {
@@ -142,15 +166,31 @@ const Links = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => {
+          setModalVisible(false);
+          setEditIndex(-1);
+          setNewLink({link: '', title: ''});
+        }}>
         <View style={styles.modal}>
           <View style={styles.slideBlock}></View>
           <TouchableOpacity
             style={{position: 'absolute', right: 30, top: 20}}
             activeOpacity={0.8}
-            onPress={() => setModalVisible(false)}>
+            onPress={() => {
+              setModalVisible(false);
+              setEditIndex(-1);
+              setNewLink({link: '', title: ''});
+            }}>
             <Icon name="close" size={30} color={colors.gray} />
           </TouchableOpacity>
+          {editIndex !== -1 && (
+            <TouchableOpacity
+              style={{position: 'absolute', left: 30, top: 20}}
+              activeOpacity={0.8}
+              onPress={deleteLinkHandler}>
+              <Icon name="trash-outline" size={24} color={'#ef4444'} />
+            </TouchableOpacity>
+          )}
           <View style={{marginTop: 15}}>
             <TextInput
               placeholder="Website Title"
@@ -170,7 +210,9 @@ const Links = () => {
               style={styles.addBtn}
               onPress={addNewLinkHandler}
               activeOpacity={0.8}>
-              <Text style={styles.addTxt}>Add Link</Text>
+              <Text style={styles.addTxt}>
+                {editIndex === -1 ? 'Add Link' : 'Save Link'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

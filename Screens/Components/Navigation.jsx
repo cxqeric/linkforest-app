@@ -6,15 +6,26 @@ import {useNavigation} from '@react-navigation/native';
 const Navigation = ({title}) => {
   const navigation = useNavigation();
   return (
-    <View style={styles.navWrapper}>
+    <View
+      style={[
+        styles.navWrapper,
+        title === 'SETTINGS' && {flexDirection: 'row-reverse'},
+      ]}>
       <Image
         source={require('../../assets/logo_dark.png')}
         style={{width: 35, height: 35, objectFit: 'contain'}}
       />
       <Text style={styles.navTxt}>{title}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-        <Ionicons name={'settings-outline'} size={24} color={colors.dark} />
-      </TouchableOpacity>
+      {title !== 'SETTINGS' && (
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <Ionicons name={'settings-outline'} size={24} color={colors.dark} />
+        </TouchableOpacity>
+      )}
+      {title === 'SETTINGS' && (
+        <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
+          <Ionicons name={'chevron-back'} size={24} color={colors.dark} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

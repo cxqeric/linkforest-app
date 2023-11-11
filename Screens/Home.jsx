@@ -31,7 +31,7 @@ const Home = ({navigation}) => {
         .doc(user.uid)
         .get()
         .then(documentSnapshot => {
-          if (documentSnapshot.exists) {
+          if (documentSnapshot.exists && documentSnapshot.data().username) {
             dispatch(setUid(user.uid));
             navigation.navigate('Dashboard');
           } else {
@@ -103,7 +103,7 @@ const Home = ({navigation}) => {
             style={styles.googleBtn}
             onPress={() =>
               googleSignInBtnHandler()
-                .then(() => navigation.navigate('Dashboard'))
+                .then()
                 .catch(error =>
                   ToastAndroid.show(`Error: ${error}`, ToastAndroid.BOTTOM),
                 )

@@ -29,6 +29,7 @@ const Profile = () => {
   const uid = useSelector(state => state.userSlice.uid);
   const dispatch = useDispatch();
   const [mainDataLoading, setMainDataLoading] = useState(false);
+
   const saveChangesHandler = async () => {
     if (data.description) {
       setLoading(true);
