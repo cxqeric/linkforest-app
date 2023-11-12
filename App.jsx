@@ -12,11 +12,17 @@ import {store} from './Redux Toolkit/store';
 import Username from './Screens/Username';
 import Websites from './Screens/Dashboard/Websites';
 import analytics from '@react-native-firebase/analytics';
+import {LogLevel, OneSignal} from 'react-native-onesignal';
+import {ONESIGNAL} from './AdsData';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
   const routeNameRef = React.useRef();
   const navigationRef = React.useRef();
+  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+  OneSignal.initialize(ONESIGNAL);
+  OneSignal.Notifications.requestPermission(true);
+
   return (
     <NavigationContainer
       ref={navigationRef}
