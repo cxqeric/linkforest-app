@@ -25,6 +25,7 @@ import {setData} from '../../Redux Toolkit/user';
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
+  const [photoLoading, setPhotoLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
   const uid = useSelector(state => state.userSlice.uid);
   const dispatch = useDispatch();
@@ -60,10 +61,10 @@ const Profile = () => {
   };
 
   const uploadImageHandler = response => {
+    setPhotoLoading(true);
     const reference = storage().ref(`/Link Forests Profiles/${uid}`);
     const imagePath = response.assets[0].uri;
     const uploadTask = reference.putFile(imagePath);
-
     uploadTask.on(
       'state_changed',
       snapshot => {
@@ -84,12 +85,14 @@ const Profile = () => {
             .doc(uid)
             .update({image: downloadURL})
             .then(() => {
+              setPhotoLoading(false);
               setLoading(false);
               ToastAndroid.show('Profile Updated', ToastAndroid.BOTTOM);
             })
             .catch(error => {
               setLoading(false);
               console.log(error);
+              setPhotoLoading(false);
               ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
             });
         });
@@ -142,14 +145,20 @@ const Profile = () => {
               <TouchableOpacity
                 style={styles.uploadBtn}
                 activeOpacity={0.8}
-                onPress={selectImageHandler}>
-                <Text style={styles.uploadTxt}>Upload</Text>
-                <UploadIcon
-                  name="upload"
-                  size={18}
-                  color={colors.green}
-                  style={{marginLeft: 6}}
-                />
+                onPress={!photoLoading && selectImageHandler}>
+                {photoLoading ? (
+                  <ActivityIndicator color={colors.green} size={'small'} />
+                ) : (
+                  <>
+                    <Text style={styles.uploadTxt}>Upload</Text>
+                    <UploadIcon
+                      name="upload"
+                      size={18}
+                      color={colors.green}
+                      style={{marginLeft: 6}}
+                    />
+                  </>
+                )}
               </TouchableOpacity>
             </View>
             <View style={styles.inputView}>
@@ -214,6 +223,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     flexDirection: 'row',
+    height: 38,
+    width: '40%',
   },
   uploadTxt: {
     color: colors.green,

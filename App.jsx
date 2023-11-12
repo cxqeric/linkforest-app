@@ -5,17 +5,36 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './Screens/Home';
 import Dashboard from './Screens/Dashboard';
 import Profile from './Screens/Dashboard/Profile';
-import Links from './Screens/Dashboard/SocialLinks';
 import Themes from './Screens/Dashboard/Themes';
 import Settings from './Screens/Settings';
 import {Provider} from 'react-redux';
 import {store} from './Redux Toolkit/store';
 import Username from './Screens/Username';
+import Websites from './Screens/Dashboard/Websites';
+import analytics from '@react-native-firebase/analytics';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
+  const routeNameRef = React.useRef();
+  const navigationRef = React.useRef();
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      onStateChange={async () => {
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+        if (previousRouteName !== currentRouteName) {
+          await analytics().logScreenView({
+            screen_name: currentRouteName,
+            screen_class: currentRouteName,
+          });
+        }
+        routeNameRef.current = currentRouteName;
+      }}>
       <Provider store={store}>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
@@ -34,8 +53,8 @@ const App = () => {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="Links"
-            component={Links}
+            name="Websites"
+            component={Websites}
             options={{headerShown: false}}
           />
           <Stack.Screen

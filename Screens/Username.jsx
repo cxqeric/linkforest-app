@@ -34,15 +34,36 @@ const Username = ({route, navigation}) => {
           .doc(route.params.data.uid)
           .set({
             theme: 'Default',
+            customTheme: {
+              background: '#ffffff',
+              textColor: '#000',
+              linkBackground: '#e2e8f0',
+              linkColor: '#000',
+            },
             username: username.replaceAll(' ', '').toLowerCase(),
+            image:
+              'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
           })
           .then(() => {
             dispatch(
-              setData({username: username.replaceAll(' ', '').toLowerCase()}),
+              setData({
+                theme: 'Default',
+                customTheme: {
+                  background: '#ffffff',
+                  textColor: '#000',
+                  linkBackground: '#e2e8f0',
+                  linkColor: '#000',
+                },
+                username: username.replaceAll(' ', '').toLowerCase(),
+                image:
+                  'https://firebasestorage.googleapis.com/v0/b/link-forest.appspot.com/o/noImage.png?alt=media&token=af7f81d0-1c93-4120-9824-df8c62d90fcd',
+              }),
             );
             navigation.navigate('Dashboard');
           });
       }
+    } else {
+      ToastAndroid.show('Username Is Short!', ToastAndroid.BOTTOM);
     }
   };
   return (

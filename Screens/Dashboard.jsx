@@ -1,16 +1,33 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Profile from './Dashboard/Profile';
-import Links from './Dashboard/Links';
 import Themes from './Dashboard/Themes';
 import {colors} from '../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SocialLinks from './Dashboard/SocialLinks';
 import Analytics from './Dashboard/Analytics';
+import Websites from './Dashboard/Websites';
+import analytics from '@react-native-firebase/analytics';
+
 const Dashboard = ({navigation}) => {
   const Tab = createBottomTabNavigator();
-
+  useEffect(() => {
+    const logScreenView = async routeName => {
+      await analytics().logScreenView({
+        screen_name: routeName,
+        screen_class: routeName,
+      });
+    };
+    const onTabPress = ({route}) => {
+      const routeName = route.name;
+      logScreenView(routeName);
+    };
+    const unsubscribeFocus = navigation.addListener('tabPress', onTabPress);
+    return () => {
+      unsubscribeFocus();
+    };
+  }, [navigation]);
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -18,11 +35,11 @@ const Dashboard = ({navigation}) => {
           let iconName;
           if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
-          } else if (route.name === 'Links') {
+          } else if (route.name === 'Websites') {
             iconName = focused ? 'link' : 'link-outline';
           } else if (route.name === 'Themes') {
             iconName = focused ? 'color-filter' : 'color-filter-outline';
-          } else if (route.name === 'Social Links') {
+          } else if (route.name === 'Socials') {
             iconName = 'logo-instagram';
           } else if (route.name === 'Analytics') {
             iconName = focused ? 'analytics' : 'analytics-outline';
@@ -48,13 +65,13 @@ const Dashboard = ({navigation}) => {
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="Social Links"
+        name="Socials"
         component={SocialLinks}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="Links"
-        component={Links}
+        name="Websites"
+        component={Websites}
         options={{headerShown: false}}
       />
       <Tab.Screen

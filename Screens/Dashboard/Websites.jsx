@@ -8,6 +8,8 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import DraggableFlatList, {
   ScaleDecorator,
@@ -19,8 +21,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setData} from '../../Redux Toolkit/user';
+import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
+import {LINK_BANNER} from '../../AdsData';
 
-const Links = () => {
+const adUnitId = __DEV__ ? TestIds.BANNER : LINK_BANNER;
+
+const Websites = () => {
   const [loading, setLoading] = useState(false);
   const data = useSelector(state => state.userSlice.data);
   const uid = useSelector(state => state.userSlice.uid);
@@ -103,10 +109,11 @@ const Links = () => {
   };
 
   const renderItem = ({item, drag, isActive}) => {
+    const isLastItem = item.index == websites.length - 1;
     return (
       <ScaleDecorator>
         <TouchableOpacity
-          style={styles.card}
+          style={[styles.card, isLastItem && {marginBottom: 30}]}
           onLongPress={drag}
           disabled={isActive}
           activeOpacity={0.8}
@@ -138,23 +145,26 @@ const Links = () => {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <Navigation title="LINKS" />
+    <SafeAreaView style={styles.container}>
+      <Navigation title="WEBSITES" />
       {!loading && (
         <>
           <TouchableOpacity
             style={styles.addBtn}
             onPress={() => setModalVisible(true)}>
-            <Text style={styles.addTxt}>Add Link</Text>
+            <Text style={styles.addTxt}>Add Website</Text>
           </TouchableOpacity>
-          <DraggableFlatList
-            data={websites}
-            onDragEnd={({data}) => saveChangesHandler(data)}
-            keyExtractor={item => item.index.toString()}
-            renderItem={renderItem}
-            style={{width: '100%', height: '100%'}}
-            contentContainerStyle={styles.flatListContainer}
-          />
+          <GestureHandlerRootView style={{flex: 1}}>
+            <DraggableFlatList
+              showsVerticalScrollIndicator={false}
+              data={websites}
+              onDragEnd={({data}) => saveChangesHandler(data)}
+              keyExtractor={item => item.index.toString()}
+              renderItem={renderItem}
+              style={{width: '100%', height: '100%'}}
+              contentContainerStyle={styles.flatListContainer}
+            />
+          </GestureHandlerRootView>
         </>
       )}
       {loading && (
@@ -211,13 +221,13 @@ const Links = () => {
               onPress={addNewLinkHandler}
               activeOpacity={0.8}>
               <Text style={styles.addTxt}>
-                {editIndex === -1 ? 'Add Link' : 'Save Link'}
+                {editIndex === -1 ? 'Add Website' : 'Save Website'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-    </GestureHandlerRootView>
+    </SafeAreaView>
   );
 };
 
@@ -264,6 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    marginBottom: 10,
   },
   addTxt: {
     textAlign: 'center',
@@ -299,4 +310,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Links;
+export default Websites;

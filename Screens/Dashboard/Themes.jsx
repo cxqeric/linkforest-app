@@ -14,6 +14,10 @@ import {colors} from '../../utils/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {setData} from '../../Redux Toolkit/user';
 import firestore from '@react-native-firebase/firestore';
+import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
+import {THEMES_BANNER} from '../../AdsData';
+
+const adUnitId = __DEV__ ? TestIds.BANNER : THEMES_BANNER;
 
 const Themes = () => {
   const data = useSelector(state => state.userSlice.data);
@@ -274,7 +278,7 @@ const Themes = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <Text
+        {/* <Text
           style={{
             color: colors.dark,
             fontFamily: 'Montserrat-Medium',
@@ -283,8 +287,15 @@ const Themes = () => {
           }}>
           Themes are specially designed for the Links, So Add Links To See The
           Difference!
-        </Text>
+        </Text> */}
       </ScrollView>
+      <BannerAd
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+      />
     </SafeAreaView>
   );
 };

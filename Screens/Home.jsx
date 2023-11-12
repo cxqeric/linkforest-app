@@ -16,8 +16,9 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {WEB_CLIENT_ID} from '../Config';
 import {useDispatch} from 'react-redux';
-import {setData, setUid} from '../Redux Toolkit/user';
+import {setUid} from '../Redux Toolkit/user';
 import firestore from '@react-native-firebase/firestore';
+import {CommonActions} from '@react-navigation/native';
 
 const Home = ({navigation}) => {
   const lowerCardRef = useRef(null);
@@ -33,10 +34,25 @@ const Home = ({navigation}) => {
         .then(documentSnapshot => {
           if (documentSnapshot.exists && documentSnapshot.data().username) {
             dispatch(setUid(user.uid));
-            navigation.navigate('Dashboard');
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'Dashboard'}],
+              }),
+            );
           } else {
             dispatch(setUid(user.uid));
-            navigation.navigate('Username', {data: {uid: user.uid}});
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'Username',
+                    params: {data: {uid: user.uid}},
+                  },
+                ],
+              }),
+            );
           }
         });
     } else {
