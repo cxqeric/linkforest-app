@@ -12,6 +12,18 @@ import {
   AdEventType,
 } from 'react-native-google-mobile-ads';
 import {ANALYTICS_BANNER, ANALYTICS_INTERSTITIAL} from '../../AdsData';
+import Icon from 'react-native-vector-icons/FontAwesome6';
+
+const socialIcons = {
+  Mail: 'envelope',
+  Github: 'github',
+  Linkedin: 'linkedin',
+  Instagram: 'instagram',
+  Facebook: 'facebook',
+  Twitter: 'x-twitter',
+  Threads: 'threads',
+  Snapchat: 'snapchat',
+};
 
 const adUnitIdInterstitial = __DEV__
   ? TestIds.INTERSTITIAL
@@ -52,6 +64,7 @@ const Analytics = () => {
     const unsubscribe = roomRef.onSnapshot(documentSnapshot => {
       if (documentSnapshot.exists) {
         setAnalyticsData(documentSnapshot.data());
+        console.log(documentSnapshot.data());
       }
     });
 
@@ -137,21 +150,6 @@ const Analytics = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
       <Navigation title={'ANALYTICS'} />
-      <Text
-        style={{
-          fontFamily: 'Montserrat-Bold',
-          color: colors.light,
-          marginBottom: 12,
-          fontSize: 16,
-          textTransform: 'uppercase',
-          letterSpacing: 1,
-          backgroundColor: colors.green,
-          width: '100%',
-          textAlign: 'center',
-          paddingVertical: 10,
-        }}>
-        Experimental Feature!
-      </Text>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {cardData.map(item => (
           <View style={styles.card} key={item.index}>
@@ -160,6 +158,130 @@ const Analytics = () => {
             <Text style={styles.cardSubtitle}>Views</Text>
           </View>
         ))}
+        <View
+          style={{
+            width: '92%',
+            backgroundColor: 'white',
+            marginTop: 12,
+            padding: 12,
+            borderRadius: 10,
+          }}>
+          <Text
+            style={{
+              fontFamily: 'Montserrat-SemiBold',
+              color: 'black',
+              fontSize: 20,
+            }}>
+            Social Links
+          </Text>
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'start',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 10,
+              marginTop: 12,
+            }}>
+            {analyticsData &&
+              Object.keys(analyticsData.socialLinks).map(item => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '20%',
+                      paddingHorizontal: 8,
+                      paddingVertical: 5,
+                      borderRadius: 8,
+                      backgroundColor: '#f1f5f9',
+                    }}>
+                    <Icon
+                      name={socialIcons[item]}
+                      color={colors.dark}
+                      size={22}
+                      style={{width: 30}}
+                    />
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontFamily: 'Montserrat-SemiBold',
+                      }}>
+                      {Object.values(analyticsData?.socialLinks[item]).reduce(
+                        (total, value) => total + value,
+                        0,
+                      )}
+                    </Text>
+                  </View>
+                );
+              })}
+          </View>
+        </View>
+        <View
+          style={{
+            width: '92%',
+            backgroundColor: 'white',
+            marginTop: 12,
+            padding: 12,
+            borderRadius: 10,
+          }}>
+          <Text
+            style={{
+              fontFamily: 'Montserrat-SemiBold',
+              color: 'black',
+              fontSize: 20,
+            }}>
+            Websites
+          </Text>
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'start',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 10,
+              marginTop: 12,
+            }}>
+            {analyticsData?.links &&
+              Object.keys(analyticsData.links).map(item => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '100%',
+                      paddingHorizontal: 8,
+                      paddingVertical: 10,
+                      borderRadius: 8,
+                      backgroundColor: '#f1f5f9',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontFamily: 'Montserrat-Medium',
+                        width: '85%',
+                        lineHeight: 22,
+                        fontSize: 13,
+                      }}>
+                      {item}
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'black',
+                        width: '15%',
+                        textAlign: 'center',
+                        fontFamily: 'Montserrat-SemiBold',
+                      }}>
+                      {Object.values(analyticsData?.links[item]).reduce(
+                        (total, value) => total + value,
+                        0,
+                      )}
+                    </Text>
+                  </View>
+                );
+              })}
+          </View>
+        </View>
         <Text
           style={{
             color: colors.gray,

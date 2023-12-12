@@ -12,22 +12,22 @@ import analytics from '@react-native-firebase/analytics';
 
 const Dashboard = ({navigation}) => {
   const Tab = createBottomTabNavigator();
-  useEffect(() => {
-    const logScreenView = async routeName => {
-      await analytics().logScreenView({
-        screen_name: routeName,
-        screen_class: routeName,
-      });
-    };
-    const onTabPress = ({route}) => {
-      const routeName = route.name;
-      logScreenView(routeName);
-    };
-    const unsubscribeFocus = navigation.addListener('tabPress', onTabPress);
-    return () => {
-      unsubscribeFocus();
-    };
-  }, [navigation]);
+  // useEffect(() => {
+  //   const logScreenView = async routeName => {
+  //     await analytics().logScreenView({
+  //       screen_name: routeName,
+  //       screen_class: routeName,
+  //     });
+  //   };
+  //   const onTabPress = ({route}) => {
+  //     const routeName = route.name;
+  //     logScreenView(routeName);
+  //   };
+  //   const unsubscribeFocus = navigation.addListener('tabPress', onTabPress);
+  //   return () => {
+  //     unsubscribeFocus();
+  //   };
+  // }, [navigation]);
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
