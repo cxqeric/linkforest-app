@@ -11,7 +11,6 @@ import {Provider} from 'react-redux';
 import {store} from './Redux Toolkit/store';
 import Username from './Screens/Username';
 import Websites from './Screens/Dashboard/Websites';
-import analytics from '@react-native-firebase/analytics';
 import {LogLevel, OneSignal} from 'react-native-onesignal';
 import {ONESIGNAL} from './ONESIGNAL';
 
