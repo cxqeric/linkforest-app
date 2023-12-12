@@ -21,10 +21,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setData} from '../../Redux Toolkit/user';
-import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
-import {LINK_BANNER} from '../../AdsData';
-
-const adUnitId = __DEV__ ? TestIds.BANNER : LINK_BANNER;
 
 const Websites = () => {
   const [loading, setLoading] = useState(false);

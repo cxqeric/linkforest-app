@@ -1,7 +1,4 @@
 {
   "name": "Link Forest",
-  "displayName": "Link Forest",
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-6116422903517331~3366937933"
-  }
+  "displayName": "Link Forest"
 }

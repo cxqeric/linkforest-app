@@ -20,7 +20,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
-import {firebase} from '@react-native-firebase/auth';
 import {setData} from '../../Redux Toolkit/user';
 
 const Profile = () => {

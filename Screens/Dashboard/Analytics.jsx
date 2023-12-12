@@ -4,14 +4,6 @@ import {StyleSheet, Text, View, SafeAreaView, ScrollView} from 'react-native';
 import Navigation from '../Components/Navigation';
 import {colors} from '../../utils/colors';
 import firestore from '@react-native-firebase/firestore';
-import {
-  BannerAd,
-  BannerAdSize,
-  TestIds,
-  InterstitialAd,
-  AdEventType,
-} from 'react-native-google-mobile-ads';
-import {ANALYTICS_BANNER, ANALYTICS_INTERSTITIAL} from '../../AdsData';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 
 const socialIcons = {
@@ -25,29 +17,7 @@ const socialIcons = {
   Snapchat: 'snapchat',
 };
 
-const adUnitIdInterstitial = __DEV__
-  ? TestIds.INTERSTITIAL
-  : ANALYTICS_INTERSTITIAL;
-const adUnitId = __DEV__ ? TestIds.BANNER : ANALYTICS_BANNER;
-
-const interstitial = InterstitialAd.createForAdRequest(adUnitIdInterstitial, {
-  requestNonPersonalizedAdsOnly: true,
-});
-
 const Analytics = () => {
-  useEffect(() => {
-    const unsubscribe = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        interstitial.show();
-      },
-    );
-
-    interstitial.load();
-
-    return unsubscribe;
-  }, []);
-
   const data = useSelector(state => state.userSlice.data);
   const uid = useSelector(state => state.userSlice.uid);
   const [analyticsData, setAnalyticsData] = useState();
@@ -293,13 +263,6 @@ const Analytics = () => {
           The Analytics data is available starting from November 12, 2023.
         </Text>
       </ScrollView>
-      <BannerAd
-        unitId={adUnitId}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-      />
     </SafeAreaView>
   );
 };

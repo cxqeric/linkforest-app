@@ -13,7 +13,7 @@ import Username from './Screens/Username';
 import Websites from './Screens/Dashboard/Websites';
 import analytics from '@react-native-firebase/analytics';
 import {LogLevel, OneSignal} from 'react-native-onesignal';
-import {ONESIGNAL} from './AdsData';
+import {ONESIGNAL} from './ONESIGNAL';
 
 const App = () => {
   const Stack = createNativeStackNavigator();

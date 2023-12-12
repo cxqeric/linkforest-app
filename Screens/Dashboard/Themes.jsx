@@ -14,10 +14,6 @@ import {colors} from '../../utils/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {setData} from '../../Redux Toolkit/user';
 import firestore from '@react-native-firebase/firestore';
-import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
-import {THEMES_BANNER} from '../../AdsData';
-
-const adUnitId = __DEV__ ? TestIds.BANNER : THEMES_BANNER;
 
 const Themes = () => {
   const data = useSelector(state => state.userSlice.data);
@@ -289,13 +285,6 @@ const Themes = () => {
           Difference!
         </Text> */}
       </ScrollView>
-      <BannerAd
-        unitId={adUnitId}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-      />
     </SafeAreaView>
   );
 };

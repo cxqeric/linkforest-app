@@ -16,10 +16,6 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {setData} from '../../Redux Toolkit/user';
-import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
-import {SOCIAL_BANNER} from '../../AdsData';
-
-const adUnitId = __DEV__ ? TestIds.BANNER : SOCIAL_BANNER;
 
 const SocialLinkInput = ({icon, placeholder, value, onChangeText}) => (
   <View style={styles.socialLinkCont}>
@@ -128,13 +124,6 @@ const SocialLinks = () => {
           )}
         </TouchableOpacity>
       </ScrollView>
-      <BannerAd
-        unitId={adUnitId}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-      />
     </SafeAreaView>
   );
 };

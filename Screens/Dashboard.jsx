@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useEffect} from 'react';
+import {StyleSheet} from 'react-native';
+import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Profile from './Dashboard/Profile';
 import Themes from './Dashboard/Themes';
@@ -8,26 +8,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import SocialLinks from './Dashboard/SocialLinks';
 import Analytics from './Dashboard/Analytics';
 import Websites from './Dashboard/Websites';
-import analytics from '@react-native-firebase/analytics';
 
-const Dashboard = ({navigation}) => {
+const Dashboard = () => {
   const Tab = createBottomTabNavigator();
-  // useEffect(() => {
-  //   const logScreenView = async routeName => {
-  //     await analytics().logScreenView({
-  //       screen_name: routeName,
-  //       screen_class: routeName,
-  //     });
-  //   };
-  //   const onTabPress = ({route}) => {
-  //     const routeName = route.name;
-  //     logScreenView(routeName);
-  //   };
-  //   const unsubscribeFocus = navigation.addListener('tabPress', onTabPress);
-  //   return () => {
-  //     unsubscribeFocus();
-  //   };
-  // }, [navigation]);
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
