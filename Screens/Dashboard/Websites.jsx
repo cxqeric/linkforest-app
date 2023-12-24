@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   addTxt: {
     textAlign: 'center',
     fontFamily: 'Montserrat-Bold',
-    color: colors.dark,
+    color: colors.light,
     fontSize: 18,
   },
   inputField: {

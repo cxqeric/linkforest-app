@@ -54,6 +54,7 @@ const Settings = ({navigation}) => {
   };
 
   const deleteAccountHandler = () => {
+    console.log(data.image);
     setModalVisible(false);
     firestore()
       .collection('Link Forests')
@@ -83,7 +84,9 @@ const Settings = ({navigation}) => {
           ToastAndroid.BOTTOM,
         );
       });
-    data?.image && removeStorageHandler();
+    data?.image &&
+      !data?.image.includes('noImage.png') &&
+      removeStorageHandler();
     let user = auth().currentUser;
     user
       .delete()

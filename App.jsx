@@ -11,35 +11,11 @@ import {Provider} from 'react-redux';
 import {store} from './Redux Toolkit/store';
 import Username from './Screens/Username';
 import Websites from './Screens/Dashboard/Websites';
-import {LogLevel, OneSignal} from 'react-native-onesignal';
-import {ONESIGNAL} from './ONESIGNAL';
-
 const App = () => {
   const Stack = createNativeStackNavigator();
-  const routeNameRef = React.useRef();
-  const navigationRef = React.useRef();
-  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-  OneSignal.initialize(ONESIGNAL);
-  OneSignal.Notifications.requestPermission(true);
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={() => {
-        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
-      }}
-      onStateChange={async () => {
-        const previousRouteName = routeNameRef.current;
-        const currentRouteName = navigationRef.current.getCurrentRoute().name;
-
-        if (previousRouteName !== currentRouteName) {
-          await analytics().logScreenView({
-            screen_name: currentRouteName,
-            screen_class: currentRouteName,
-          });
-        }
-        routeNameRef.current = currentRouteName;
-      }}>
+    <NavigationContainer>
       <Provider store={store}>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
